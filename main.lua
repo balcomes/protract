@@ -3,7 +3,10 @@ function love.load()
     cellSize = 12
     timer = 0
     timerLimit = 0.05
+    bumpblink = 0
     colony = {}
+    water_table = {}
+    dirt_table = {}
 
     gridXCount = math.floor(love.graphics.getWidth()/cellSize + 0.5)
     gridYCount = math.floor(love.graphics.getHeight()/cellSize + 0.5)
@@ -22,8 +25,13 @@ function love.load()
 
     -- Player Drawing Function
     function drawPlayer(x, y)
+
         -- Hat
-        love.graphics.setColor(1, 0, 1)
+        if bumpblink > 0 then
+            love.graphics.setColor(math.random(), math.random(), math.random())
+        else
+            love.graphics.setColor(1, 0, 1)
+        end
         love.graphics.rectangle(
             'fill',
             (x - 1) * cellSize,
@@ -32,7 +40,11 @@ function love.load()
             cellSize/3
         )
         -- Face
-        love.graphics.setColor(.8, .8, .8)
+        if bumpblink > 0 then
+            love.graphics.setColor(math.random(), math.random(), math.random())
+        else
+            love.graphics.setColor(.8, .8, .8)
+        end
         love.graphics.rectangle(
             'fill',
             (x - 1) * cellSize,
@@ -41,7 +53,11 @@ function love.load()
             cellSize/3
         )
         -- Eyes
-        love.graphics.setColor(.1, .1, .1)
+        if bumpblink > 0 then
+            love.graphics.setColor(math.random(), math.random(), math.random())
+        else
+            love.graphics.setColor(.1, .1, .1)
+        end
         love.graphics.rectangle(
             'fill',
             (x - 1) * cellSize + cellSize/5,
@@ -50,7 +66,11 @@ function love.load()
             cellSize/4 - 1
         )
         -- Eyes
-        love.graphics.setColor(.1, .1, .1)
+        if bumpblink > 0 then
+            love.graphics.setColor(math.random(), math.random(), math.random())
+        else
+            love.graphics.setColor(.1, .1, .1)
+        end
         love.graphics.rectangle(
             'fill',
             (x - 1) * cellSize + 3*cellSize/5,
@@ -59,7 +79,11 @@ function love.load()
             cellSize/4 - 1
         )
         -- Pants
-        love.graphics.setColor(.1, .2, .8)
+        if bumpblink > 0 then
+            love.graphics.setColor(math.random(), math.random(), math.random())
+        else
+            love.graphics.setColor(.1, .2, .8)
+        end
         love.graphics.rectangle(
             'fill',
             (x - 1) * cellSize,
@@ -67,6 +91,123 @@ function love.load()
             cellSize - 1,
             cellSize/3 - 1
         )
+    end
+
+--------------------------------------------------------------------------------
+-- Board
+--------------------------------------------------------------------------------
+
+    -- Board Class
+    Board = {}
+    Board.__index = Board
+    function Board:Create()
+        local this =
+        {
+            grid = {},
+        }
+        for y = 1, gridYCount do
+            this.grid[y] = {}
+            for x = 1, gridXCount do
+                this.grid[y][x] = ""
+            end
+        end
+        setmetatable(this, Board)
+        return this
+    end
+
+    -- Board Clear
+    function Board:Clear()
+        for y = 1, gridYCount do
+            self.grid[y] = {}
+            for x = 1, gridXCount do
+                self.grid[y][x] = ""
+            end
+        end
+    end
+
+    -- Board Water Fill
+    function Board:Ocean()
+        for y = 1, gridYCount do
+            for x = 1, gridXCount do
+                table.insert(water_table, Water:Create(x,y))
+            end
+        end
+    end
+
+    -- Board Island Fill
+    function Board:Island()
+        for y = 10, gridYCount - 10 do
+            for x = 10, gridXCount -10 do
+                table.insert(dirt_table, Dirt:Create(x,y))
+            end
+        end
+    end
+
+--------------------------------------------------------------------------------
+-- Water
+--------------------------------------------------------------------------------
+
+    -- Water Class
+    Water = {}
+    Water.__index = Water
+    function Water:Create(xo,yo)
+        local this =
+        {
+            x = xo,
+            y = yo,
+            c1 = math.random()/4,
+            c2 = math.random()/4,
+            c3 = math.random()/2 + 0.5,
+            blink = true,
+        }
+        setmetatable(this, Water)
+        board.grid[yo][xo] = "water"
+        return this
+    end
+
+    -- Water Blink
+    function Water:Blink()
+        if math.random() < 0.01 then
+            self.c1 = math.random()/4
+            self.c2 = math.random()/4
+            self.c3 = math.random()/2 + 0.5
+        end
+    end
+
+    -- Water Animate
+    function Water:Animate()
+        love.graphics.setColor(self.c1, self.c2, self.c3)
+        if self.blink == true then
+            self:Blink()
+        end
+        drawCell(self.x, self.y)
+    end
+
+--------------------------------------------------------------------------------
+-- Dirt
+--------------------------------------------------------------------------------
+
+    -- Dirt Class
+    Dirt = {}
+    Dirt.__index = Dirt
+    function Dirt:Create(xo,yo)
+        local this =
+        {
+            x = xo,
+            y = yo,
+            c1 = 35/255,
+            c2 = 40/255,
+            c3 = 45/255,
+        }
+        setmetatable(this, Dirt)
+        board.grid[yo][xo] = "dirt"
+        return this
+    end
+
+    -- Dirt Animate
+    function Dirt:Animate()
+        love.graphics.setColor(self.c1, self.c2, self.c3)
+        drawCell(self.x, self.y)
     end
 
 --------------------------------------------------------------------------------
@@ -117,7 +258,11 @@ function love.load()
     -- Animate Snake
     function Snake:Animate()
         for segmentIndex, segment in ipairs(self.snakeSegments) do
-            love.graphics.setColor(self.c1, self.c2, self.c3)
+            if bumpblink > 0 then
+                love.graphics.setColor(math.random(), math.random(), math.random())
+            else
+                love.graphics.setColor(self.c1, self.c2, self.c3)
+            end
             drawCell(segment.x, segment.y)
         end
     end
@@ -137,6 +282,7 @@ function love.load()
             c1 = math.floor(math.random(1,4))/3,
             c2 = math.floor(math.random(1,4))/3,
             c3 = math.floor(math.random(1,4))/3,
+            fertile = true,
         }
         setmetatable(this, Beetle)
         return this
@@ -153,7 +299,7 @@ function love.load()
         if math.random() < 0.5 then
             direction = math.floor(math.random()*5)
             local oktogo = true
-            if direction == 1 and self.y > 2 then
+            if direction == 1 and self.y > 10 then
                 for k,v in pairs(snake.snakeSegments) do
                     if v.x == self.x and v.y == self.y - 1 then
                         oktogo = false
@@ -163,7 +309,7 @@ function love.load()
                     self.y = self.y - 1
                 end
             end
-            if direction == 2 and self.y < gridYCount - 1 then
+            if direction == 2 and self.y < gridYCount - 10 then
                 for k,v in pairs(snake.snakeSegments) do
                     if v.x == self.x and v.y == self.y + 1 then
                         oktogo = false
@@ -173,7 +319,7 @@ function love.load()
                     self.y = self.y + 1
                 end
             end
-            if direction == 3 and self.x > 2 then
+            if direction == 3 and self.x > 10 then
                 for k,v in pairs(snake.snakeSegments) do
                     if v.x == self.x - 1 and v.y == self.y then
                         oktogo = false
@@ -183,7 +329,7 @@ function love.load()
                     self.x = self.x - 1
                 end
             end
-            if direction == 4 and self.x < gridXCount then
+            if direction == 4 and self.x < gridXCount - 10 then
                 for k,v in pairs(snake.snakeSegments) do
                     if v.x == self.x + 1 and v.y == self.y then
                         oktogo = false
@@ -198,11 +344,18 @@ function love.load()
 
 --------------------------------------------------------------------------------
 
+
+    -- Setup Board
+    board = Board:Create()
+    Board:Ocean()
+    Board:Island()
+
+
     player = Player:Create()
     snake = Snake:Create(player.x,player.y)
     for i = 1, 40 do
-        x = math.random(5, gridXCount - 5)
-        y = math.random(5, gridYCount - 5)
+        x = math.random(10, gridXCount - 10)
+        y = math.random(10, gridYCount - 10)
         table.insert(colony, Beetle:Create(x,y))
     end
 
@@ -211,6 +364,7 @@ end
 
 function love.update(dt)
     timer = timer + dt
+    bumpblink = bumpblink - dt
     -- Handle Frames
     if timer >= timerLimit then
         -- Handle Game Speed
@@ -285,18 +439,37 @@ function love.update(dt)
 
             if snake.snakeSegments[1] == nil then
                 -- Player Movement
-                if love.keyboard.isDown( "up" ) and player.y > 1 then
+                if love.keyboard.isDown( "up" ) and player.y > 10 then
                     player.y = player.y - 1
                 end
-                if love.keyboard.isDown( "down" ) and player.y < gridYCount then
+                if love.keyboard.isDown( "down" ) and player.y < gridYCount - 10 then
                     player.y = player.y + 1
                 end
-                if love.keyboard.isDown( "left" ) and player.x > 1 then
+                if love.keyboard.isDown( "left" ) and player.x > 10 then
                     player.x = player.x - 1
                 end
-                if love.keyboard.isDown( "right" ) and player.x < gridXCount then
+                if love.keyboard.isDown( "right" ) and player.x < gridXCount - 10 then
                     player.x = player.x + 1
                 end
+            end
+        end
+
+                -- Snake Bump Beetle
+        for k,v in pairs(snake.snakeSegments) do
+            for k2,v2 in pairs(colony) do
+
+                if v.x == v2.x
+                and v.y == v2.y then
+                    bumpblink = 0.5
+                end
+            end
+        end
+
+            -- Player Bump Beetle
+        for k,v in pairs(colony) do
+            if v.x == player.x
+            and v.y == player.y then
+                bumpblink = 0.5
             end
         end
 
@@ -313,8 +486,14 @@ function love.update(dt)
                     and v2.c2 == v.c2
                     and v2.c3 == v.c3
                     and v2.x == v.x
-                    and v2.y == v.y then
+                    and v2.y == v.y
+                    and v.fertile == true
+                    and v2.fertile == true then
                         table.insert(colony, Beetle:Create(v.x,v.y))
+                        if math.random() < 0.2 then
+                            table.insert(colony, Beetle:Create(v.x,v.y))
+                        end
+                        v.fertile = false
                     end
                 end
             end
@@ -327,6 +506,14 @@ end
 
 -- Draw Everything
 function love.draw()
+
+    for k,v in pairs(water_table) do
+        v:Animate()
+    end
+    for k,v in pairs(dirt_table) do
+        v:Animate()
+    end
+
     snake:Animate()
     player:Animate()
 
