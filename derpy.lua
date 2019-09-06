@@ -124,7 +124,6 @@ function Derpy:Move()
 
     if self.stay_count > 80 and self.unstuck == false then
         level = level + 1
-        timerLimit = timerLimit * 0.98
         love.window.setTitle("Level " .. level)
         self.alive = false
     end
