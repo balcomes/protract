@@ -4,9 +4,8 @@
 
 function love.load()
 
-    require("beetle")
     require("board")
-    require("derpy")
+    require("lichen")
     require("dirt")
     require("player")
     require("snake")
@@ -16,11 +15,10 @@ function love.load()
     timer = 0
     timerLimit = 0.05
     bumpblink = 0
-    colony = {}
+    level = 1
     water_table = {}
     dirt_table = {}
     brood = {}
-    level = 1
 
     gridXCount = math.floor(love.graphics.getWidth()/cellSize + 0.5)
     gridYCount = math.floor(love.graphics.getHeight()/cellSize + 0.5)
@@ -46,12 +44,6 @@ function love.load()
     player = Player:Create()
     snake = Snake:Create(player.x,player.y)
 
-    --for i = 1, 40 do
-    --    x = math.random(10, gridXCount - 10)
-    --    y = math.random(10, gridYCount - 10)
-    --    table.insert(colony, Beetle:Create(x,y))
-    --end
-
 end
 
 --------------------------------------------------------------------------------
@@ -68,48 +60,20 @@ function love.update(dt)
         snake.y = player.y
 
         if math.random() < 0.01 then
-            table.insert(brood, Derpy:Create(math.random(13,gridXCount-13),
+            table.insert(brood, Lichen:Create(math.random(13,gridXCount-13),
                                              math.random(13,gridYCount-13)))
         end
 
         snake:HitSelf()
         snake:UseTool()
-        snake:HitDerpy()
+        snake:HitLichen()
 
-        player:BumpBeetle()
-
-        --Move Beetles
-        for k,v in pairs(colony) do
-            v:Move()
-        end
-
-        -- Derpy Brood Move
+        -- Lichen Brood Move
         for k,v in pairs(brood) do
             v:Move()
         end
 
-        -- Breed Beetles
-        for k,v in pairs(colony) do
-            for k2,v2 in pairs(colony) do
-                if k ~= k2 then
-                    if v2.c1 == v.c1
-                    and v2.c2 == v.c2
-                    and v2.c3 == v.c3
-                    and v2.x == v.x
-                    and v2.y == v.y
-                    and v.fertile == true
-                    and v2.fertile == true then
-                        table.insert(colony, Beetle:Create(v.x,v.y))
-                        if math.random() < 0.2 then
-                            table.insert(colony, Beetle:Create(v.x,v.y))
-                        end
-                        v.fertile = false
-                    end
-                end
-            end
-        end
-
-        -- Kill Derpy
+        -- Kill Lichen
         for k,v in pairs(brood) do
             if v.alive == false then
                 table.remove(brood, k)
@@ -126,10 +90,10 @@ function love.update(dt)
             board.grid[v.y][v.x] = "dirt"
         end
 
-        -- Record Derpy
+        -- Record Lichen
         for k,v in pairs(brood) do
             for k2,v2 in pairs(v.snakeSegments) do
-                board.grid[v2.y][v2.x] = "derpy"
+                board.grid[v2.y][v2.x] = "lichen"
             end
         end
 
@@ -151,10 +115,6 @@ function love.draw()
 
     snake:Animate()
     player:Animate()
-
-    for k,v in pairs(colony) do
-        v:Animate()
-    end
 
     for k,v in pairs(brood) do
         v:Animate()
