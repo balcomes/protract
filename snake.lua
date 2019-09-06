@@ -53,7 +53,7 @@ function Snake:UseTool()
     local nextXPosition
     local nextYPosition
 
-    if self.snakeSegments[1] ~= nil then
+    if self.snakeSegments[1] ~= nil and #self.snakeSegments < 10 + level then
         nextXPosition = self.snakeSegments[1].x
         nextYPosition = self.snakeSegments[1].y
     else

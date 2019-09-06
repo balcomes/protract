@@ -67,10 +67,12 @@ function love.update(dt)
         snake:HitSelf()
         snake:UseTool()
         snake:HitLichen()
+        player:HitLichen()
 
 
         -- Lichen Brood Move
         for k,v in pairs(brood) do
+            v:Move()
             v:Move()
         end
 
@@ -81,6 +83,12 @@ function love.update(dt)
 
         for k,v in pairs(brood) do
             v:Circulation()
+        end
+
+        for k,v in pairs(brood) do
+            if #v.snakeSegments < 2 then
+                table.remove(brood,k)
+            end
         end
 
         -- Kill Lichen

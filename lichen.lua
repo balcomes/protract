@@ -42,6 +42,7 @@ end
 -- Lichen Movement
 
 function Lichen:Move()
+
     if self.unstuck == true then
         if #self.directionQueue > 1 then
             table.remove(self.directionQueue, 1)
@@ -132,17 +133,25 @@ end
 
 function Lichen:Circulation()
 
+    function copy1(obj)
+      if type(obj) ~= 'table' then return obj end
+      local res = {}
+      for k, v in pairs(obj) do res[copy1(k)] = copy1(v) end
+      return res
+    end
+
     local tocheck = {}
     local hits = {}
-    local left = self.snakeSegments
+    local nucleous = copy1(self.snakeSegments[1])
+    local left = copy1(self.snakeSegments)
 
     choice = math.random(1,#self.snakeSegments)
     table.insert(tocheck, self.snakeSegments[choice])
     table.insert(hits, self.snakeSegments[choice])
     table.remove(left, choice)
 
-    while #tocheck > 1 do
-        checking = tocheck
+    for i = 1, 100 do
+        checking = copy1(tocheck)
         tocheck = {}
         for kc, vc in pairs(checking) do
             for kl,vl in pairs(left) do
@@ -158,8 +167,6 @@ function Lichen:Circulation()
             end
         end
     end
-
-    local nucleous = self.snakeSegments[#self.snakeSegments]
 
     local connected = false
     for k, v in pairs(hits) do
