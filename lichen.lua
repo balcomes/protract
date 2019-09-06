@@ -129,3 +129,60 @@ function Lichen:Move()
     end
 
 end
+
+function Lichen:Circulation()
+
+    local tocheck = {}
+    local hits = {}
+    local left = self.snakeSegments
+
+    choice = math.random(1,#self.snakeSegments)
+    table.insert(tocheck, self.snakeSegments[choice])
+    table.insert(hits, self.snakeSegments[choice])
+    table.remove(left, choice)
+
+    while #tocheck > 1 do
+        checking = tocheck
+        tocheck = {}
+        for kc, vc in pairs(checking) do
+            for kl,vl in pairs(left) do
+                local next = {}
+                if (vl.x == vc.x + 1 and vl.y == vc.y)
+                or (vl.x == vc.x and vl.y == vc.y + 1)
+                or (vl.x == vc.x - 1 and vl.y == vc.y)
+                or (vl.x == vc.x and vl.y == vc.y - 1) then
+                    table.insert(tocheck, vl)
+                    table.insert(hits, vl)
+                    table.remove(left, kl)
+                end
+            end
+        end
+    end
+
+    local nucleous = self.snakeSegments[#self.snakeSegments]
+
+    local connected = false
+    for k, v in pairs(hits) do
+        if v.x == nucleous.x and v.y == nucleous.y then
+            connected = true
+        end
+    end
+
+    if connected == false then
+        for k,v in pairs(hits) do
+            table.remove(self.snakeSegments, k)
+        end
+    end
+
+end
+
+function Lichen:HitTool()
+    for k,v in pairs(self.snakeSegments) do
+        for k2,v2 in pairs(snake.snakeSegments) do
+            if v.x == v2.x
+            and v.y == v2.y then
+                table.remove(self.snakeSegments,k)
+            end
+        end
+    end
+end
