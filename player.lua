@@ -98,7 +98,7 @@ end
 -- Player Bump Lichen
 --------------------------------------------------------------------------------
 
-function Player:BumpBeetle()
+function Player:HitLichen()
     for k,v in pairs(brood) do
         for k2,v2 in pairs(v.snakeSegments) do
             if v2.x == self.x and v2.y == self.y then

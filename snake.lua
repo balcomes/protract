@@ -92,9 +92,9 @@ function Snake:UseTool()
     end
 end
 
--- Snake Hit Derpy
+-- Snake Hit Lichen
 
-function Snake:HitDerpy()
+function Snake:HitLichen()
     for k,v in pairs(self.snakeSegments) do
         for k2,v2 in pairs(brood) do
             for k3,v3 in pairs(v2.snakeSegments) do

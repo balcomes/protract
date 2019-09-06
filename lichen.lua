@@ -1,12 +1,12 @@
 --------------------------------------------------------------------------------
--- Derpy
+-- Lichen
 --------------------------------------------------------------------------------
 
--- Derpy Class
+-- Lichen Class
 
-Derpy = {}
-Derpy.__index = Derpy
-function Derpy:Create(xo,yo)
+Lichen = {}
+Lichen.__index = Lichen
+function Lichen:Create(xo,yo)
     local this =
     {
         snakeSegments = {
@@ -22,13 +22,13 @@ function Derpy:Create(xo,yo)
         c2 = math.random()/4,
         c3 = math.random()/2 + 0.4,
     }
-    setmetatable(this, Derpy)
+    setmetatable(this, Lichen)
     return this
 end
 
--- Animate Derpy
+-- Animate Lichen
 
-function Derpy:Animate()
+function Lichen:Animate()
     for segmentIndex, segment in ipairs(self.snakeSegments) do
         if self.stay_count > 30 then
             love.graphics.setColor(math.random(),math.random(),math.random())
@@ -39,9 +39,9 @@ function Derpy:Animate()
     end
 end
 
--- Derpy Movement
+-- Lichen Movement
 
-function Derpy:Move()
+function Lichen:Move()
     if self.unstuck == true then
         if #self.directionQueue > 1 then
             table.remove(self.directionQueue, 1)

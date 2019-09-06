@@ -67,6 +67,7 @@ function love.update(dt)
         snake:HitSelf()
         snake:UseTool()
         snake:HitLichen()
+        player:HitLichen()
 
         -- Lichen Brood Move
         for k,v in pairs(brood) do
