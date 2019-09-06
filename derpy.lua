@@ -60,48 +60,11 @@ function Derpy:Move()
             if nextXPosition > gridXCount then
                 nextXPosition = 1
             end
-            oktogo = true
-            for k,v in pairs(snake.snakeSegments) do
-                if v.x ~= nil and v.y ~= nil then
-                    if v.x == self.snakeSegments[1].x + 1 and v.y == self.snakeSegments[1].y then
-                        oktogo = false
-                    end
-                end
-            end
-            for segmentIndex, segment in ipairs(self.snakeSegments) do
-                if (segmentIndex ~= #self.snakeSegments
-                and nextXPosition == segment.x
-                and nextYPosition == segment.y) or oktogo == false then
-                    stay = true
-                end
-            end
-            if stay == true then
-                nextXPosition = self.snakeSegments[1].x
-            end
         end
-
         if self.directionQueue[1] == 2 then
             nextXPosition = nextXPosition - 1
             if nextXPosition < 1 then
                 nextXPosition = gridXCount
-            end
-            oktogo = true
-            for k,v in pairs(snake.snakeSegments) do
-                if v.x ~= nil and v.y ~= nil then
-                    if v.x == self.snakeSegments[1].x - 1 and v.y == self.snakeSegments[1].y then
-                        oktogo = false
-                    end
-                end
-            end
-            for segmentIndex, segment in ipairs(self.snakeSegments) do
-                if (segmentIndex ~= #self.snakeSegments
-                and nextXPosition == segment.x
-                and nextYPosition == segment.y) or oktogo == false then
-                    stay = true
-                end
-            end
-            if stay == true then
-                nextXPosition = self.snakeSegments[1].x
             end
         end
 
@@ -110,24 +73,6 @@ function Derpy:Move()
             if nextYPosition > gridYCount then
                 nextYPosition = 1
             end
-            oktogo = true
-            for k,v in pairs(snake.snakeSegments) do
-                if v.x ~= nil and v.y ~= nil then
-                    if v.x == self.snakeSegments[1].x and v.y == self.snakeSegments[1].y + 1 then
-                        oktogo = false
-                    end
-                end
-            end
-            for segmentIndex, segment in ipairs(self.snakeSegments) do
-                if (segmentIndex ~= #self.snakeSegments
-                and nextXPosition == segment.x
-                and nextYPosition == segment.y) or oktogo == false then
-                    stay = true
-                end
-            end
-            if stay == true then
-                nextYPosition = self.snakeSegments[1].y
-            end
         end
 
         if self.directionQueue[1] == 4 then
@@ -135,29 +80,34 @@ function Derpy:Move()
             if nextYPosition < 1 then
                 nextYPosition = gridYCount
             end
-            oktogo = true
-            for k,v in pairs(snake.snakeSegments) do
-                if v.x ~= nil and v.y ~= nil then
-                    if v.x == self.snakeSegments[1].x and v.y == self.snakeSegments[1].y - 1 then
-                        oktogo = false
-                    end
+        end
+
+        oktogo = true
+        for k,v in pairs(snake.snakeSegments) do
+            if v.x ~= nil and v.y ~= nil then
+                if v.x == nextXPosition
+                and v.y == nextYPosition then
+                    oktogo = false
                 end
             end
-            for segmentIndex, segment in ipairs(self.snakeSegments) do
-                if (segmentIndex ~= #self.snakeSegments
-                and nextXPosition == segment.x
-                and nextYPosition == segment.y) or oktogo == false then
+        end
+        for k,v in pairs(brood) do
+            for k2,v2 in pairs(v.snakeSegments) do
+                if (nextXPosition == v2.x and nextYPosition == v2.y)
+                or oktogo == false
+                or board.grid[nextYPosition][nextXPosition] == "water" then
                     stay = true
                 end
             end
-            if stay == true then
-                nextYPosition = self.snakeSegments[1].y
-            end
+        end
+        if stay == true then
+            nextXPosition = self.snakeSegments[1].x
+            nextYPosition = self.snakeSegments[1].y
         end
 
         if stay == false and nextXPosition ~= nil and nextYPosition ~= nil then
             table.insert(self.snakeSegments, 1, {x = nextXPosition, y = nextYPosition})
-            if math.random() > 0.01 then
+            if math.random() > 0.1 then
                 table.remove(self.snakeSegments)
             end
             self.stay_count = 0
@@ -171,11 +121,11 @@ function Derpy:Move()
         self.stay_count = self.stay_count + 1
     end
 
-    -- Derpy Explodes, Change Mold Color, +Level, Spawn Babies, Speedup
     if self.stay_count > 80 and self.unstuck == false then
         level = level + 1
         timerLimit = timerLimit * 0.98
         love.window.setTitle("Level " .. level)
         self.alive = false
     end
+
 end

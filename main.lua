@@ -39,17 +39,18 @@ function love.load()
 
     -- Setup Board
     board = Board:Create()
-    Board:Ocean()
-    Board:Island()
+    board:Clear()
+    board:Ocean()
+    board:Island()
 
     player = Player:Create()
     snake = Snake:Create(player.x,player.y)
 
-    for i = 1, 40 do
-        x = math.random(10, gridXCount - 10)
-        y = math.random(10, gridYCount - 10)
-        table.insert(colony, Beetle:Create(x,y))
-    end
+    --for i = 1, 40 do
+    --    x = math.random(10, gridXCount - 10)
+    --    y = math.random(10, gridYCount - 10)
+    --    table.insert(colony, Beetle:Create(x,y))
+    --end
 
 end
 
@@ -67,16 +68,17 @@ function love.update(dt)
         snake.y = player.y
 
         if math.random() < 0.01 then
-            table.insert(brood, Derpy:Create(gridXCount-10,gridYCount-10))
+            table.insert(brood, Derpy:Create(math.random(13,gridXCount-13),
+                                             math.random(13,gridYCount-13)))
         end
 
         snake:HitSelf()
         snake:UseTool()
-        snake:HitBeetle()
+        snake:HitDerpy()
 
         player:BumpBeetle()
 
-        -- Move Beetles
+        --Move Beetles
         for k,v in pairs(colony) do
             v:Move()
         end
@@ -111,6 +113,23 @@ function love.update(dt)
         for k,v in pairs(brood) do
             if v.alive == false then
                 table.remove(brood, k)
+            end
+        end
+
+        -- Record water
+        for k,v in pairs(water_table) do
+            board.grid[v.y][v.x] = "water"
+        end
+
+        -- Record dirt
+        for k,v in pairs(dirt_table) do
+            board.grid[v.y][v.x] = "dirt"
+        end
+
+        -- Record Derpy
+        for k,v in pairs(brood) do
+            for k2,v2 in pairs(v.snakeSegments) do
+                board.grid[v2.y][v2.x] = "derpy"
             end
         end
 

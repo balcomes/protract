@@ -35,6 +35,7 @@ function Board:Ocean()
     for y = 1, gridYCount do
         for x = 1, gridXCount do
             table.insert(water_table, Water:Create(x,y))
+            self.grid[y][x] = "water"
         end
     end
 end
@@ -44,6 +45,7 @@ function Board:Island()
     for y = 10, gridYCount - 10 do
         for x = 10, gridXCount -10 do
             table.insert(dirt_table, Dirt:Create(x,y))
+            self.grid[y][x] = "dirt"
         end
     end
 end

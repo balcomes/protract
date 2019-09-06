@@ -50,56 +50,30 @@ end
 
 function Snake:UseTool()
 
+    local nextXPosition
+    local nextYPosition
+
+    if self.snakeSegments[1] ~= nil then
+        nextXPosition = self.snakeSegments[1].x
+        nextYPosition = self.snakeSegments[1].y
+    else
+        nextXPosition = player.x
+        nextYPosition = player.y
+    end
+
     if love.keyboard.isDown( "z" ) then
         if love.keyboard.isDown( "up" ) and player.y > 1 then
-            if self.snakeSegments[1] ~= nil then
-                table.insert(self.snakeSegments, 1,
-                {x = self.snakeSegments[1].x,
-                 y = self.snakeSegments[1].y - 1})
-            else
-                table.insert(self.snakeSegments, 1,
-                {x = player.x,
-                 y = player.y - 1})
-            end
-
+            nextYPosition = nextYPosition - 1
         elseif love.keyboard.isDown( "down" ) and player.y < gridYCount then
-            if self.snakeSegments[1] ~= nil then
-                table.insert(self.snakeSegments, 1,
-                {x = self.snakeSegments[1].x,
-                 y = self.snakeSegments[1].y + 1})
-            else
-                table.insert(self.snakeSegments, 1,
-                {x = player.x,
-                 y = player.y + 1})
-            end
-
+            nextYPosition = nextYPosition + 1
         elseif love.keyboard.isDown( "left" ) and player.x > 1 then
-            if self.snakeSegments[1] ~= nil then
-                table.insert(self.snakeSegments, 1,
-                {x = self.snakeSegments[1].x - 1,
-                 y = self.snakeSegments[1].y})
-            else
-                table.insert(self.snakeSegments, 1,
-                {x = player.x - 1,
-                 y = player.y})
-            end
-
+            nextXPosition = nextXPosition - 1
         elseif love.keyboard.isDown( "right" ) and player.x < gridXCount then
-            if self.snakeSegments[1] ~= nil then
-                table.insert(self.snakeSegments, 1,
-                {x = self.snakeSegments[1].x + 1,
-                 y = self.snakeSegments[1].y})
-            else
-                table.insert(self.snakeSegments, 1,
-                {x = player.x + 1,
-                 y = player.y})
-            end
+            nextXPosition = nextXPosition + 1
         end
-
+        table.insert(self.snakeSegments, 1, {x = nextXPosition, y = nextYPosition})
     else
-
         table.remove(self.snakeSegments,1)
-
         if self.snakeSegments[1] == nil then
             -- Player Movement
             if love.keyboard.isDown( "up" ) and player.y > 10 then
@@ -118,14 +92,16 @@ function Snake:UseTool()
     end
 end
 
--- Snake Hit Beetle
+-- Snake Hit Derpy
 
-function Snake:HitBeetle()
+function Snake:HitDerpy()
     for k,v in pairs(self.snakeSegments) do
-        for k2,v2 in pairs(colony) do
-            if v.x == v2.x
-            and v.y == v2.y then
-                bumpblink = 0.5
+        for k2,v2 in pairs(brood) do
+            for k3,v3 in pairs(v2.snakeSegments) do
+                if v.x == v3.x
+                and v.y == v3.y then
+                    bumpblink = 0.5
+                end
             end
         end
     end

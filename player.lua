@@ -95,13 +95,15 @@ end
 
 
 --------------------------------------------------------------------------------
--- Player Bump Beetle
+-- Player Bump Derpy
 --------------------------------------------------------------------------------
 
 function Player:BumpBeetle()
-    for k,v in pairs(colony) do
-        if v.x == self.x and v.y == self.y then
-            bumpblink = 0.5
+    for k,v in pairs(brood) do
+        for k2,v2 in pairs(v.snakeSegments) do
+            if v2.x == self.x and v2.y == self.y then
+                bumpblink = 0.5
+            end
         end
     end
 end
