@@ -122,12 +122,11 @@ end
 
 function Snake:HitBeetle()
     for k,v in pairs(self.snakeSegments) do
-    for k2,v2 in pairs(colony) do
-
-        if v.x == v2.x
-        and v.y == v2.y then
-            bumpblink = 0.5
+        for k2,v2 in pairs(colony) do
+            if v.x == v2.x
+            and v.y == v2.y then
+                bumpblink = 0.5
+            end
         end
-    end
     end
 end
