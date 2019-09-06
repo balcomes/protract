@@ -18,9 +18,9 @@ function Derpy:Create(xo,yo)
         stay_count = 0,
         alive = true,
         unstuck = true,
-        c1 = (.1),
-        c2 = .5 + math.random()/2,
-        c3 = (.1),
+        c1 = math.random()/2 + 0.4,
+        c2 = math.random()/4,
+        c3 = math.random()/2 + 0.4,
     }
     setmetatable(this, Derpy)
     return this
@@ -48,8 +48,9 @@ function Derpy:Move()
         end
 
         local stay = false
-        local nextXPosition = self.snakeSegments[1].x
-        local nextYPosition = self.snakeSegments[1].y
+        seg = math.random(1,#self.snakeSegments)
+        local nextXPosition = self.snakeSegments[seg].x
+        local nextYPosition = self.snakeSegments[seg].y
 
         local choices = {1,2,3,4}
         local choice = math.random(1,#choices)
@@ -107,7 +108,7 @@ function Derpy:Move()
 
         if stay == false and nextXPosition ~= nil and nextYPosition ~= nil then
             table.insert(self.snakeSegments, 1, {x = nextXPosition, y = nextYPosition})
-            if math.random() > 0.1 then
+            if math.random() > 1 then
                 table.remove(self.snakeSegments)
             end
             self.stay_count = 0
