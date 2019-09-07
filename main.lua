@@ -74,6 +74,7 @@ function love.update(dt)
         for k,v in pairs(brood) do
             v:Move()
             v:Move()
+
         end
 
         -- Lichen Brood Injured

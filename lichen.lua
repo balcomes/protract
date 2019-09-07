@@ -10,9 +10,7 @@ function Lichen:Create(xo,yo)
     local this =
     {
         snakeSegments = {
-            {x = xo - 3, y = yo - 1},
-            {x = xo - 2, y = yo - 1},
-            {x = xo - 1, y = yo - 1},
+            {x = xo, y = yo, nuc = true},
         },
         directionQueue = {'left'},
         stay_count = 0,
@@ -33,7 +31,11 @@ function Lichen:Animate()
         if self.stay_count > 30 then
             love.graphics.setColor(math.random(),math.random(),math.random())
         else
-            love.graphics.setColor(self.c1, self.c2, self.c3)
+            if segment.nuc == true then
+                love.graphics.setColor(self.c1 - 0.1, self.c2 - 0.1, self.c3 - 0.1)
+            else
+                love.graphics.setColor(self.c1, self.c2, self.c3)
+            end
         end
         drawCell(segment.x, segment.y)
     end
@@ -108,10 +110,7 @@ function Lichen:Move()
         end
 
         if stay == false and nextXPosition ~= nil and nextYPosition ~= nil then
-            table.insert(self.snakeSegments, 1, {x = nextXPosition, y = nextYPosition})
-            if math.random() > 1 then
-                table.remove(self.snakeSegments)
-            end
+            table.insert(self.snakeSegments, 1, {x = nextXPosition, y = nextYPosition, nuc = false})
             self.stay_count = 0
         else
             self.stay_count = self.stay_count + 1
@@ -142,7 +141,6 @@ function Lichen:Circulation()
 
     local tocheck = {}
     local hits = {}
-    local nucleous = copy1(self.snakeSegments[1])
     local left = copy1(self.snakeSegments)
 
     choice = math.random(1,#self.snakeSegments)
@@ -170,7 +168,7 @@ function Lichen:Circulation()
 
     local connected = false
     for k, v in pairs(hits) do
-        if v.x == nucleous.x and v.y == nucleous.y then
+        if v.nuc == true then
             connected = true
         end
     end
