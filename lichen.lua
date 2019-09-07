@@ -15,6 +15,7 @@ function Lichen:Create(xo,yo)
         directionQueue = {'left'},
         stay_count = 0,
         alive = true,
+        fertile = false,
         unstuck = true,
         c1 = math.random()/2 + 0.4,
         c2 = math.random()/4,
@@ -87,7 +88,7 @@ function Lichen:Move()
         end
 
         oktogo = true
-        for k,v in pairs(snake.snakeSegments) do
+        for k,v in pairs(tool.snakeSegments) do
             if v.x ~= nil and v.y ~= nil then
                 if v.x == nextXPosition
                 and v.y == nextYPosition then
@@ -123,9 +124,7 @@ function Lichen:Move()
     end
 
     if self.stay_count > 80 and self.unstuck == false then
-        level = level + 1
-        love.window.setTitle("Level " .. level)
-        self.alive = false
+        self.fertile = true
     end
 
 end
@@ -148,7 +147,7 @@ function Lichen:Circulation()
     table.insert(hits, self.snakeSegments[choice])
     table.remove(left, choice)
 
-    for i = 1, 100 do
+    for i = 1, #self.snakeSegments do
         checking = copy1(tocheck)
         tocheck = {}
         for kc, vc in pairs(checking) do
@@ -183,11 +182,23 @@ end
 
 function Lichen:HitTool()
     for k,v in pairs(self.snakeSegments) do
-        for k2,v2 in pairs(snake.snakeSegments) do
+        for k2,v2 in pairs(tool.snakeSegments) do
             if v.x == v2.x
             and v.y == v2.y then
                 table.remove(self.snakeSegments,k)
             end
         end
+    end
+end
+
+function Lichen:Split()
+    if self.fertile == true then
+        n1 = copy1(self.snakeSegments[math.random(#self.snakeSegments)])
+        n2 = copy1(self.snakeSegments[math.random(#self.snakeSegments)])
+        n3 = copy1(self.snakeSegments[math.random(#self.snakeSegments)])
+        self.alive = false
+        table.insert(brood, Lichen:Create(n1.x,n1.y))
+        table.insert(brood, Lichen:Create(n2.x,n2.y))
+        table.insert(brood, Lichen:Create(n3.x,n3.y))
     end
 end
