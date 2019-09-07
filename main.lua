@@ -95,7 +95,13 @@ function love.update(dt)
         -- Kill Lichen
         for k,v in pairs(brood) do
             if v.alive == false then
+                n1 = copy1(v.snakeSegments[math.random(#v.snakeSegments)])
+                n2 = copy1(v.snakeSegments[math.random(#v.snakeSegments)])
+                n3 = copy1(v.snakeSegments[math.random(#v.snakeSegments)])
                 table.remove(brood, k)
+                table.insert(brood, Lichen:Create(n1.x,n1.y))
+                table.insert(brood, Lichen:Create(n2.x,n2.y))
+                table.insert(brood, Lichen:Create(n3.x,n3.y))
             end
         end
 
